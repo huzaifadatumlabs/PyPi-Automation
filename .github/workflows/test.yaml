@@ -35,9 +35,9 @@ jobs:
       run: |
         poetry install
 
-    - name: Bump version
+    - name: Set version to 3.0.0
       run: |
-        poetry version patch 
+        poetry version 3.0.0  
 
     - name: Build the package
       run: |
