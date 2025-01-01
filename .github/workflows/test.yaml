@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -22,6 +22,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install poetry
+
+    - name: Upgrade Poetry (if needed)
+      run: |
+        poetry self update
 
     - name: Cache Poetry dependencies
       uses: actions/cache@v2
@@ -38,6 +42,18 @@ jobs:
     - name: Set version to 3.0.0
       run: |
         poetry version 3.0.0
+
+    - name: Commit version change (if version changed)
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add pyproject.toml
+        git commit -m "Bump version to 3.0.0" || echo "No changes to commit"
+        git push origin main
+
+    - name: Clean previous builds (optional)
+      run: |
+        rm -rf dist/
 
     - name: Build the package
       run: |
