@@ -23,9 +23,21 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install poetry
 
+    - name: Cache Poetry dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pypoetry
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-poetry-
+
     - name: Install dependencies using Poetry
       run: |
         poetry install
+
+    - name: Bump version
+      run: |
+        poetry version patch 
 
     - name: Build the package
       run: |
@@ -36,4 +48,4 @@ jobs:
         POETRY_HTTP_BASIC_PYPI_USERNAME: __token__
         POETRY_HTTP_BASIC_PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
-        poetry publish --build 
+        poetry publish --build
